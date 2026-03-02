@@ -1,0 +1,9 @@
+services:
+  presearch-proxy:
+    build: .
+    container_name: presearch-proxy
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
