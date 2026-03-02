@@ -40,13 +40,29 @@ class UpstreamClient:
             response.raise_for_status()
             return response.json()
 
-    async def image_search_bytes(self, *, image_bytes: bytes, filename: str, mode: str) -> dict[str, Any]:
+    async def image_search_bytes(
+        self,
+        *,
+        image_bytes: bytes,
+        filename: str,
+        mode: str,
+        limit_preview: int | None = None,
+    ) -> dict[str, Any]:
         files = {
             "image": (filename, image_bytes, "application/octet-stream"),
         }
         data = {"mode": mode}
+        if limit_preview is not None:
+            data["limit_preview"] = str(limit_preview)
         async with httpx.AsyncClient(timeout=self.timeout) as client:
             response = await client.post(settings.upstream_image_url, data=data, files=files, headers=self._headers())
+            response.raise_for_status()
+            return response.json()
+
+    async def image_search_results(self, *, sid: str, limit: int, offset: int) -> dict[str, Any]:
+        params = {"sid": sid, "limit": limit, "offset": offset}
+        async with httpx.AsyncClient(timeout=self.timeout) as client:
+            response = await client.get(settings.upstream_image_url, params=params, headers=self._headers())
             response.raise_for_status()
             return response.json()
 
