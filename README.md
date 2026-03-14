@@ -2,6 +2,13 @@
 
 > 用于把网页搜索流程封装成你自己的 API：文本搜索 + 图片搜索（上传/URL）。
 
+## 0. 项目声明（请先阅读）
+
+- 项目作用：提供一个 FastAPI 代理层，把presearch.com网页端的文本检索与图片检索流程封装为可调用 API，并提供简洁 Web UI（`/ui`）用于结果展示。
+- 逆向范围：仅针对浏览器开发者工具 Network 面板可见的请求链路进行接口映射，主要包含 `presearch.com` 页面请求参数与 `explore.fans/api/presearch/image-search` 的上传/分页取回流程（`sid/limit/offset`）。
+- 使用限制：本项目仅用于技术交流、接口调试与学习研究，禁止用于商业用途，禁止用于任何违法违规场景。
+- 合规要求：请遵守目标站点 ToS/robots 与当地法律法规，不得绕过验证码、身份认证、权限控制等安全机制。
+
 ## 1. 能力说明
 
 - `POST /api/search/text`：文本检索，默认 `mode=spicy`
@@ -85,7 +92,62 @@ docker compose up -d --build
 
 ---
 
-## 6. 抓包映射建议
+## 6. ClawCloud 免费部署（GitHub 有资格场景）
+
+以下流程适用于你已具备 ClawCloud GitHub 资格、并已将代码推到 GitHub。
+
+### 6.1 准备镜像（GHCR）
+
+仓库已包含 GitHub Actions 工作流：`.github/workflows/docker-publish.yml`。  
+默认在 `push main` 时自动构建并推送镜像到 `ghcr.io/<owner>/<repo>:latest`。
+
+检查点：
+
+1. GitHub `Actions` 中 `Docker Publish` 任务为绿色成功。
+2. GitHub `Packages` 中出现对应镜像包。
+3. 建议将该包设为 `Public`（ClawCloud 拉取最省事）。
+
+### 6.2 创建 ClawCloud 应用
+
+在 ClawCloud 控制台选择 `Deploy from Docker`（或 App Launchpad）后填写：
+
+- Image 类型：`Public`（若 GHCR 包是私有则选 `Private` 并配置凭证）
+- Image Name：`ghcr.io/<你的GitHub用户名>/<仓库名>:latest`
+- Container Port：`8000`
+- Start Command：留空（使用 `Dockerfile` 默认命令）
+- Health Check Path：`/health`
+
+### 6.3 环境变量（至少）
+
+```env
+UPSTREAM_IMAGE_URL=https://explore.fans/api/presearch/image-search
+UPSTREAM_ORIGIN=https://presearch.com
+UPSTREAM_REFERER=https://presearch.com/
+UPSTREAM_USER_AGENT=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36
+UPSTREAM_TIMEOUT_SECONDS=20
+DEFAULT_MODE=spicy
+```
+
+可选：
+
+- `UPSTREAM_AUTHORIZATION`
+- `UPSTREAM_COOKIE`
+- `UPSTREAM_TEXT_URL`（如果要启用文本搜索上游）
+
+### 6.4 部署后验收
+
+```bash
+curl https://<你的域名>/health
+curl -F "image=@/path/to/test.jpg" "https://<你的域名>/api/search/image/upload?mode=spicy&fetch_full=true&full_limit=40"
+```
+
+浏览器访问：
+
+- `https://<你的域名>/ui`
+
+---
+
+## 7. 抓包映射建议
 
 在浏览器开发者工具中把真实请求映射到如下配置：
 
@@ -105,7 +167,7 @@ docker compose up -d --build
 ---
 
 
-## 7. 测试（已覆盖基础用例）
+## 8. 测试（已覆盖基础用例）
 
 ```bash
 cd fastapi-presearch
